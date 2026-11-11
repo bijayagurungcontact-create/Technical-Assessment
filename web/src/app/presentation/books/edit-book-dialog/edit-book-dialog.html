@@ -1,0 +1,98 @@
+<p-dialog
+  [visible]="open()"
+  (visibleChange)="!$event && closed.emit()"
+  [modal]="true"
+  [draggable]="false"
+  [closable]="!saving()"
+  [style]="{ width: '36rem' }"
+  [breakpoints]="{ '768px': '95vw' }"
+  header="Edit book"
+>
+  @if (book(); as book) {
+    <form [formGroup]="form" (ngSubmit)="save()" class="flex flex-col gap-4" novalidate>
+      <div class="flex gap-4 rounded-lg bg-surface-50 p-3">
+        <app-book-cover [url]="book.coverUrl" [title]="book.title" />
+        <div class="min-w-0">
+          <p class="font-semibold">{{ book.title }}</p>
+          <p class="text-sm text-muted-color">{{ book.author }}</p>
+          <p class="mt-1 text-xs text-muted-color">
+            Title, author, ISBN and cover come from Open Library and cannot be edited.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div class="flex flex-col gap-1">
+          <label for="edit-genre" class="text-sm font-medium">Genre *</label>
+          <p-select
+            inputId="edit-genre"
+            formControlName="genre"
+            [options]="genreOptions"
+            optionLabel="label"
+            optionValue="value"
+            [fluid]="true"
+            appendTo="body"
+            [invalid]="!!fieldError(form.controls.genre)"
+          />
+          <small class="text-red-600">{{ fieldError(form.controls.genre) }}</small>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label for="edit-price" class="text-sm font-medium">Price *</label>
+          <p-inputnumber
+            inputId="edit-price"
+            formControlName="price"
+            mode="currency"
+            [currency]="currency"
+            [min]="0"
+            [maxFractionDigits]="2"
+            [fluid]="true"
+            [invalid]="!!fieldError(form.controls.price)"
+          />
+          <small class="text-red-600">{{ fieldError(form.controls.price) }}</small>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label for="edit-stock" class="text-sm font-medium">Stock</label>
+          <p-inputnumber
+            inputId="edit-stock"
+            formControlName="stock"
+            [min]="0"
+            [showButtons]="true"
+            [fluid]="true"
+            [invalid]="!!fieldError(form.controls.stock)"
+          />
+          <small class="text-red-600">{{ fieldError(form.controls.stock) }}</small>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label for="edit-description" class="text-sm font-medium">Description</label>
+        <textarea
+          pTextarea
+          id="edit-description"
+          formControlName="description"
+          rows="3"
+          class="w-full"
+          [invalid]="!!fieldError(form.controls.description)"
+        ></textarea>
+        <small class="text-red-600">{{ fieldError(form.controls.description) }}</small>
+      </div>
+
+      @if (saveError(); as error) {
+        <p-message severity="error" [text]="error" />
+      }
+
+      <div class="flex justify-end gap-2">
+        <p-button
+          label="Cancel"
+          severity="secondary"
+          [outlined]="true"
+          [disabled]="saving()"
+          (onClick)="closed.emit()"
+        />
+        <p-button type="submit" label="Save changes" icon="pi pi-check" [loading]="saving()" />
+      </div>
+    </form>
+  }
+</p-dialog>

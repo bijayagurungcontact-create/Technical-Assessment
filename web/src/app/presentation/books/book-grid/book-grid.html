@@ -1,0 +1,113 @@
+<div class="overflow-hidden rounded-xl border border-surface-200 bg-surface-0 shadow-sm">
+  <p-table
+    [value]="$any(books())"
+    dataKey="id"
+    [lazy]="true"
+    [loading]="loading()"
+    [paginator]="true"
+    [rows]="query().pageSize"
+    [first]="(query().page - 1) * query().pageSize"
+    [totalRecords]="totalCount()"
+    [rowsPerPageOptions]="rowsPerPageOptions"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="{first}–{last} of {totalRecords}"
+    [sortField]="query().sortBy"
+    [sortOrder]="query().sortDirection === 'asc' ? 1 : -1"
+    [scrollable]="true"
+    [tableStyle]="{ 'min-width': '56rem' }"
+    (onLazyLoad)="onLazyLoad($event)"
+  >
+    <ng-template #header>
+      <tr>
+        <th class="w-20">Cover</th>
+        <th pSortableColumn="title">Title <p-sortIcon field="title" /></th>
+        <th pSortableColumn="author">Author <p-sortIcon field="author" /></th>
+        <th pSortableColumn="publishedYear" class="w-28">
+          Year <p-sortIcon field="publishedYear" />
+        </th>
+        <th pSortableColumn="genre" class="w-36">Genre <p-sortIcon field="genre" /></th>
+        <th pSortableColumn="price" class="w-28 text-right">Price <p-sortIcon field="price" /></th>
+        <th pSortableColumn="stock" class="w-28 text-right">Stock <p-sortIcon field="stock" /></th>
+        <th class="w-28 text-right">Actions</th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-row>
+      @let book = asBook(row);
+      <tr>
+        <td><app-book-cover [url]="book.coverUrl" [title]="book.title" /></td>
+        <td>
+          <div class="font-medium">{{ book.title }}</div>
+          @if (book.isbn) {
+            <div class="text-xs text-muted-color">ISBN {{ book.isbn }}</div>
+          }
+        </td>
+        <td>{{ book.author }}</td>
+        <td>{{ book.publishedYear ?? '—' }}</td>
+        <td><p-tag [value]="book.genre | genreLabel" severity="secondary" /></td>
+        <td class="text-right tabular-nums">{{ book.price | currency: currency }}</td>
+        <td class="text-right tabular-nums">
+          @if (book.stock === 0) {
+            <p-tag value="Out of stock" severity="warn" />
+          } @else {
+            {{ book.stock }}
+          }
+        </td>
+        <td>
+          <div class="flex justify-end gap-1">
+            <p-button
+              icon="pi pi-pencil"
+              [rounded]="true"
+              [text]="true"
+              severity="secondary"
+              pTooltip="Edit"
+              tooltipPosition="top"
+              [ariaLabel]="'Edit ' + book.title"
+              (onClick)="edit.emit(book)"
+            />
+            <p-button
+              icon="pi pi-trash"
+              [rounded]="true"
+              [text]="true"
+              severity="danger"
+              pTooltip="Delete"
+              tooltipPosition="top"
+              [ariaLabel]="'Delete ' + book.title"
+              [loading]="deletingId() === book.id"
+              (onClick)="delete.emit(book)"
+            />
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="8">
+          <div class="flex flex-col items-center gap-3 py-12 text-center">
+            <i class="pi pi-inbox text-4xl text-surface-400"></i>
+            @if (loading()) {
+              <p class="text-muted-color">Loading books…</p>
+            } @else if (query().genre) {
+              <p class="font-medium">No {{ query().genre! | genreLabel }} books yet</p>
+              <p class="text-sm text-muted-color">
+                Pick another genre, or add one from Open Library.
+              </p>
+            } @else {
+              <p class="font-medium">The store is empty</p>
+              <p class="text-sm text-muted-color">Search Open Library to add your first book.</p>
+            }
+            @if (!loading()) {
+              <p-button
+                label="Add book"
+                icon="pi pi-plus"
+                [outlined]="true"
+                (onClick)="add.emit()"
+              />
+            }
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

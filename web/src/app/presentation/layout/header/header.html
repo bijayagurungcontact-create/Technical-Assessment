@@ -1,0 +1,29 @@
+<header class="sticky top-0 z-10 border-b border-surface-200 bg-surface-0/95 backdrop-blur">
+  <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-3">
+    <div class="flex items-center gap-3">
+      <span
+        class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-contrast"
+      >
+        <i class="pi pi-book text-lg"></i>
+      </span>
+      <div>
+        <h1 class="text-lg font-semibold leading-tight">Book Store</h1>
+        <p class="text-sm text-muted-color">Inventory backed by Open Library</p>
+      </div>
+    </div>
+
+    <div class="flex w-full items-center gap-2 sm:w-auto">
+      <label for="genre-filter" class="text-sm font-medium text-muted-color">Genre</label>
+      <p-select
+        inputId="genre-filter"
+        class="w-full sm:w-60"
+        [options]="filterOptions()"
+        optionLabel="label"
+        optionValue="value"
+        [ngModel]="selectedFilter()"
+        (ngModelChange)="onFilterChange($event)"
+        ariaLabel="Filter books by genre"
+      />
+    </div>
+  </div>
+</header>

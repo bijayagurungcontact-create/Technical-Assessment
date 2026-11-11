@@ -1,0 +1,13 @@
+/*
+ * Layer order: PrimeNG component styles sit *below* Tailwind utilities, so a utility class
+ * on a PrimeNG component (e.g. class="w-full") always wins without !important.
+ */
+@layer theme, base, primeng, components, utilities;
+
+@import 'tailwindcss';
+@plugin 'tailwindcss-primeui';
+@import 'primeicons/primeicons.css';
+
+body {
+  @apply bg-surface-50 text-surface-800 antialiased;
+}

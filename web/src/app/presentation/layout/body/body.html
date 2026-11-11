@@ -1,0 +1,47 @@
+<main class="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-6">
+  <div class="flex flex-wrap items-end justify-between gap-3">
+    <div>
+      <h2 class="text-2xl font-semibold">Books</h2>
+      <p class="text-sm text-muted-color">{{ subtitle() }}</p>
+    </div>
+    <p-button label="Add book" icon="pi pi-plus" (onClick)="addDialogOpen.set(true)" />
+  </div>
+
+  @if (store.error(); as error) {
+    <p-message severity="error" styleClass="w-full">
+      <div class="flex w-full flex-wrap items-center justify-between gap-3">
+        <span>{{ error }}</span>
+        <p-button
+          label="Retry"
+          icon="pi pi-refresh"
+          size="small"
+          severity="danger"
+          [outlined]="true"
+          (onClick)="store.load()"
+        />
+      </div>
+    </p-message>
+  }
+
+  <app-book-grid
+    [books]="store.books()"
+    [totalCount]="store.totalCount()"
+    [loading]="store.loading()"
+    [query]="store.query()"
+    [deletingId]="deletingId()"
+    (pageChange)="onPageChange($event)"
+    (edit)="editing.set($event)"
+    (delete)="confirmDelete($event)"
+    (add)="addDialogOpen.set(true)"
+  />
+</main>
+
+<app-add-book-dialog [(visible)]="addDialogOpen" (added)="onAdded($event)" />
+<app-edit-book-dialog
+  [book]="editing()"
+  (closed)="editing.set(null)"
+  (updated)="onUpdated($event)"
+/>
+
+<p-toast position="bottom-right" />
+<p-confirmdialog [style]="{ width: '28rem' }" />
